@@ -1,6 +1,6 @@
 ---
 title: "Problem Set 06"
-author: "Your Name"
+author: "Damien Lightsey"
 date: last-modified
 date-format: "[Last modified on] MMMM DD, YYYY HH:mm:ss zzz"
 format: 
@@ -103,7 +103,7 @@ Do you think the relationship between `hs` and `income` is strong or weak, linea
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 1 Answers"}
-* Delete this and put your text answer here.
+* I believe there is a moderately strong correlation between `hs` and `income`, and that the relationship is linear, with acknowledgement of the outliers.
 :::
 
 ::: {.callout-note icon="false" title="Problem 2"}
@@ -113,10 +113,11 @@ Which regression line (high `urbanization` or low `urbanization`) in @fig-urb ha
 ::: {.callout-important icon="false" collapse="false" title="Problem 2 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+mod_full <- lm(income ~ hs * urbanization, data = hate_crimes)
+get_regression_table(mod_full)
 ```
 
-* Delete this and put your text answer here.
+* The intercept, meaning the value where `hs` is 0, is $-95647.43 for high `urbanization` areas and $-131041.39 for low `urbanization` areas, meaning tha high urbanization areas have the higher intercept.
 :::
 
 ::: {.callout-note icon="false" title="Problem 3"}
@@ -124,7 +125,7 @@ Does the slope look fairly similar (parallel) for the two levels of urbanization
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 3 Answers"}
-* Delete this and put your text answer here.
+* Yes, the two slope lines appear to be very similar for the two levels of urbanization.
 :::
 
 ::: {.callout-note icon="false" title="Problem 4"}
@@ -132,10 +133,21 @@ Based on the data visualization in @fig-urb, and your answer to 3, do you think 
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 4 Answers"}
-* Delete this and put your text answer here.
+* I believe that, because of the relative similarity of the two slopes, it is best if we use a parallel slopes model to easier suit our needs.
 
 ```{r}
 # Type your code and comments inside the code chunk
+ggplot(data = hate_crimes, 
+       aes(y = income, x = hs, color = urbanization)) +
+  geom_point()+ 
+  geom_parallel_slopes(method = "lm", se = FALSE) + 
+  labs(
+    x = "Percent of adults with high-school degree", 
+    y = "Median household income in USD $", 
+    title = "Income versus education in states with 
+    differing levels of urbanization") + 
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5))
 
 ```
 :::
@@ -147,7 +159,9 @@ Create a data visualization comparing median household income at "low" and "high
 ::: {.callout-important icon="false" collapse="false" title="Problem 5 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+ggplot(hate_crimes, aes(x = urbanization, y = income))+
+  geom_boxplot()+
+  labs(x = "Level of urbanization in states", y = "Median income per state", title = "Relationship between average household income and level of urbanization per state")
 ```
 :::
 
@@ -159,12 +173,21 @@ Run a linear regression model that examines the relationship between household `
 ```{r}
 library(scales)  # Used to format numbers and for dollars
 # Type your code and comments inside the code chunk
+med_income_model <- lm(income ~ hs + urbanization, data = hate_crimes)
+med_income_table <- med_income_model |> 
+  get_regression_table() 
+  kable(med_income_table)
 
 ```
 
 ```{r}
 # Type your code and comments here
 
+ggplot(med_income_model, aes(x = hs, y = income, color = urbanization))+
+  geom_point()+
+  labs(x = "Median income per household in state", y = "percentage of adults with high-school degrees", 
+       title = "Income versus education in states with differing levels of urbanization")+
+  geom_parallel_slopes(method = "lm", se = FALSE)
 ```
 :::
 
@@ -173,7 +196,7 @@ Is the intercept the same for the states with a "low" and "high" level of urbani
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 7 Answers"}
-* Delete this and put your text answer here.
+* The two slopes, while having the same slope, do not share an intercept. They are parallel, and thus do not meet at any one point, including intercept.
 :::
 
 ::: {.callout-note icon="false" title="Problem 8"}
@@ -183,12 +206,13 @@ What is the slope for the regression line of the states with a "high" level of u
 ::: {.callout-important icon="false" collapse="false" title="Problem 8 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+med_income_table |>
+  summarise(intercept = med_income_table[1,2], slope = med_income_table[2,2])
 ```
 
-* Delete this and put your text answer here.
+* The intercept in the states of "high" levels of urbanization is $-113,725.19.
 
-* Delete this and put your text answer here.
+* The slope for the states of both high and low urbanization is $1,986.79 per unit of `hs`.
 :::
 
 ::: {.callout-note icon="false" title="Problem 9"}
@@ -196,9 +220,9 @@ What is the slope for the regression line of the states with a "low" level of ur
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 9 Answers"}
-* Delete this and put your text answer here.
+* The slope for the states of both high and low urbanization is $1,986.79 per unit of `hs`.
 
-* Delete this and put your text answer here.
+* The intercept for states with "low" urbanization is -113725.193-7333.326 = $-121,058.52
 :::
 
 ::: {.callout-note icon="false" title="Problem 10"}
@@ -206,7 +230,7 @@ Based on your regression table output (and the data visualizations), is median h
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 10 Answers"}
-* Delete this and put your text answer here.
+* The median household income is greater for states of high urbanization. Is is greater by $7,333.33 per unit of `hs`.
 :::
 
 ::: {.callout-note icon="false" title="Problem 11"}
@@ -214,7 +238,7 @@ For every increase in 1 percentage point of high-school educated adults, what is
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 11 Answers"}
-* Delete this and put your text answer here.
+* $1986.79
 :::
 
 ::: {.callout-note icon="false" title="Problem 12"}
@@ -229,7 +253,7 @@ $$\widehat{\text{income}} = `r comma(coef(summary(med_income_model))[1])` + `r r
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 12 Answers"}
-- Your $LaTeX$ answer here.
+$$\widehat{\text{income}} = `r comma(coef(summary(med_income_model))[1])` + `r round(coef(summary(med_income_model))[2],2)` \times \text{hs}$$
 :::
 
 ::: {.callout-note icon="false" title="Problem 13"}
@@ -239,10 +263,15 @@ What would you predict as the median household income for a state with a **high*
 ::: {.callout-important icon="false" collapse="false" title="Problem 13 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+data = data.frame(
+  income = 55000,
+  hs = 85.0,
+  urbanization = "high"
+)
+predict(med_income_model, newdata = data)
 ```
 
-* Delete this and put your text answer here.
+* $55152.28
 :::
 
 ::: {.callout-note icon="false" title="Problem 14"}
@@ -252,10 +281,15 @@ What would you predict as the median household income for a state with a **low**
 ::: {.callout-important icon="false" collapse="false" title="Problem 14 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+data1 = data.frame(
+  income = 55000,
+  hs = 85.0,
+  urbanization = "low"
+)
+predict(med_income_model, newdata = data1)
 ```
 
-* Delete this and put your text answer here.
+* $47,818.96 
 :::
 
 ::: {.callout-note icon="false" title="Problem 15"}
@@ -263,7 +297,16 @@ What would you predict as the median household income for a state with a **low**
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 15 Answers"}
-* Delete this and put your text answer here.
+```{r}
+data2 = data.frame(
+  income = 55000,
+  hs = 30.0,
+  urbanization = "low"
+)
+predict(med_income_model, newdata = data2)
+```
+
+* $-61,454.7
 :::
 
 ::: {.callout-note icon="false" title="Problem 16"}
@@ -273,16 +316,25 @@ What was the observed `income` value for Maine (row 2)? What was the prediction 
 ::: {.callout-important icon="false" collapse="false" title="Problem 16 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
+hate_crimes|>
+  filter(state == "Maine")|>
+  select(state, income, hs, urbanization)
 
+dataM = data.frame(
+  income = 51710,
+  hs = 90.0,
+  urbanization = "low"
+)
+predict(med_income_model, newdata = dataM)
 ```
 
-* Delete this and put your text answer here.
+* The observed income for Maine was $51,710.
 
-* Delete this and put your text answer here.
+* The prediction for Maine was $57,752.93.
 
-* Delete this and put your text answer here.
+* The residual for Maine is 57,752.93-51,710 = $6042.93.
 
-* Delete this and put your text answer here.
+* Our model overestimated the income for this state by $6,042.93
 :::
 
 # Independent Analysis
@@ -327,7 +379,10 @@ Generate a regression model with `voles` as the response variable `y` and `veg` 
 ::: {.callout-important icon="false" collapse="false" title="Problem 17 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
+voles_mod <- lm(voles~veg+soil, data = vole_trapping)
+ggplot(voles_mod, aes(x = veg, y = voles, color = soil))+
+  geom_point()+
+  geom_parallel_slopes(method="lm", se=FALSE)
 ```
 :::
 
@@ -336,7 +391,7 @@ Would you recommend to a manager that they try to protect sites with high or low
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 18 Answers"}
-* Delete this and put your text answer here.
+* I would recommend protecting areas with high vegetation, as the slope appears to increase as vegetation increases.
 :::
 
 ::: {.callout-note icon="false" title="Problem 19"}
@@ -344,11 +399,11 @@ Dry sites are typically a lot less money to purchase and maintain for conservati
 :::
 
 ::: {.callout-important icon="false" collapse="false" title="Problem 19 Answers"}
-* Delete this and put your text answer here.
+* 30=15.5+0.259*veg, so 55.99% vegetation
 
 ```{r}
 # Type your code and comments inside the code chunk
-
+get_regression_table(voles_mod)
 ```
 :::
 
@@ -359,8 +414,12 @@ The Nature Conservancy is looking at purchasing a site for this species (in the 
 ::: {.callout-important icon="false" collapse="false" title="Problem 20 Answers"}
 ```{r}
 # Type your code and comments inside the code chunk
-
-
+dataV=data.frame(
+  veg=40.0,
+  soil="moist",
+  voles=0
+)
+predict(voles_mod, newdata = dataV)
 ```
 
 * Delete this and put your text answer here.
