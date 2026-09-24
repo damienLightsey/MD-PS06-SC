@@ -422,7 +422,7 @@ dataV=data.frame(
 predict(voles_mod, newdata = dataV)
 ```
 
-* Delete this and put your text answer here.
+* I would predict approximately 35 voles for an area with these conditions.
 :::
 
 # Turning in Your Work
